@@ -145,7 +145,7 @@ const App = {
           const activeId = val.active_report_id || (val.reports && val.reports[0]?.report_id);
           const activeRep = val.reports?.find(r => r.report_id === activeId) || val.reports?.[0];
           if (activeRep) {
-            this.report = activeRep;
+            this.report = this.ensureReportSchema(activeRep);
             this.restoreFormValues();
             this.renderInquiryList();
             console.log("☁️ Firebase 클라우드 DB로부터 최신 학생 데이터를 동기화 로드했습니다.");
@@ -214,7 +214,7 @@ const App = {
               activeRep.step_1.학급 = classNum;
             }
             
-            this.report = activeRep;
+            this.report = this.ensureReportSchema(activeRep);
 
             // 세션 상태 데이터베이스 업데이트 반영
             localStorage.setItem("antigravity_users_db", JSON.stringify(usersDb));
@@ -744,7 +744,7 @@ const App = {
   /**
    * 4단계: 가설 변수 슬롯 렌더링
    */
-      renderVariableSlots: function () {
+  renderVariableSlots: function () {
     const container = document.getElementById("variables-slots-container");
     container.innerHTML = "";
 
@@ -806,8 +806,6 @@ const App = {
     });
   },
 
-
-
   handleVariableSlotInput: function () {
     const vars = {};
     document.querySelectorAll(".input-var-slot").forEach(input => {
@@ -868,15 +866,14 @@ const App = {
   /**
    * 3단계 ~ 8단계 공통 심플 값 싱크
    */
-    /**
+  /**
    * stlite 기반 Streamlit 데이터 통계 분석기 실행 (새 창)
    */
-    openStreamlitAnalyzer: function () {
+  openStreamlitAnalyzer: function () {
     window.open("easy-data-analyzer.html", "_blank");
   },
 
-
-      handleGenericInput: function (stepNum) {
+  handleGenericInput: function (stepNum) {
     if (stepNum === 3) {
       this.report.step_3.동기 = document.getElementById("input-step3-motivation").value;
       this.report.step_3.목적 = document.getElementById("input-step3-purpose").value;
@@ -941,8 +938,7 @@ const App = {
     this.handleGenericInput(7);
   },
 
-  triggerSelfCheckModal: async function
- () {
+  triggerSelfCheckModal: async function () {
     const modal = document.getElementById("meta-self-check-modal-root");
     const listContainer = document.getElementById("meta-check-list-items");
     const commentArea = document.getElementById("meta-modal-comment-text");
@@ -1251,7 +1247,7 @@ const App = {
   /**
    * 6.2 AI 답변추천 팝오버 모달 활성화 패턴
    */
-    openAiSuggestInline: async function (step, field, targetInputId) {
+  openAiSuggestInline: async function (step, field, targetInputId) {
     this.activeSuggestTargetId = targetInputId;
 
     const root = document.getElementById("ai-suggest-popover-root");
@@ -1291,7 +1287,6 @@ const App = {
       container.innerHTML = `<div style='padding:16px; text-align:center; color:var(--danger); font-size:0.75rem;'>AI 추천 생성 실패: ${e.message}</div>`;
     }
   },
-
 
   closeAiSuggestInlineModal: function () {
     document.getElementById("ai-suggest-popover-root").style.display = "none";
@@ -1470,20 +1465,19 @@ const App = {
     document.getElementById("input-step6-observation").value = r.step_6.핵심_수치_관찰;
 
     // 7단계
-    // 7단계
-          document.getElementById("input-step7-facts").value = r.step_7.사실_정리 || "";
-          if (document.getElementById("input-step7-rvalue")) {
-            document.getElementById("input-step7-rvalue").value = r.step_7.r_value || "";
-          }
-          if (document.getElementById("input-step7-pvalue")) {
-            document.getElementById("input-step7-pvalue").value = r.step_7.p_value || "";
-          }
-          if (r.step_7.가설_검증) {
-            document.getElementById("input-step7-decision").value = r.step_7.가설_검증.판정 || "지지";
-            document.getElementById("input-step7-decision-rationale").value = r.step_7.가설_검증.근거 || "";
-            document.getElementById("input-step7-final-conclusion").value = r.step_7.가설_검증.최종_결론 || "";
-          }
-          document.getElementById("input-step7-limits").value = r.step_7.한계_후속 || "";
+    document.getElementById("input-step7-facts").value = r.step_7.사실_정리 || "";
+    if (document.getElementById("input-step7-rvalue")) {
+      document.getElementById("input-step7-rvalue").value = r.step_7.r_value || "";
+    }
+    if (document.getElementById("input-step7-pvalue")) {
+      document.getElementById("input-step7-pvalue").value = r.step_7.p_value || "";
+    }
+    if (r.step_7.가설_검증) {
+      document.getElementById("input-step7-decision").value = r.step_7.가설_검증.판정 || "지지";
+      document.getElementById("input-step7-decision-rationale").value = r.step_7.가설_검증.근거 || "";
+      document.getElementById("input-step7-final-conclusion").value = r.step_7.가설_검증.최종_결론 || "";
+    }
+    document.getElementById("input-step7-limits").value = r.step_7.한계_후속 || "";
 
     this.renderAddedReferences();
   },
@@ -1621,7 +1615,7 @@ const App = {
         example: "키워드: #충돌, #에너지보존, #MBL센서\n최종주제: 'MBL 단일 역학 센서를 이용한 평면 충돌 시 에너지 분산 양상의 정량 분석'"
       },
       3: {
-        help: "핵심 질문은 모호한 의문문이 아닌, 정량 분석이 가능한 관계형 의문문으로 설정하세요. 32과목의 특정 대단원 내용 요소가 직접 투영될수록 탐구의 깊이가 인정받기 좋습니다.",
+        help: "핵심 질문은 모호한 의문문이 아닌, 정량 분석이 가능한 관계형 의문문으로 설정하세요. 교과목의 특정 대단원 내용 요소가 직접 투영될수록 탐구의 깊이가 인정받기 좋습니다.",
         example: "질문: '공기 저항이 작용할 때, 질량비가 다른 두 물체의 충돌 전후 운동량 변화량은 선형적 수렴 값을 나타내는가?'"
       },
       4: {
@@ -1719,7 +1713,7 @@ const App = {
     if (this.autoSaveTimer) clearInterval(this.autoSaveTimer);
     this.autoSaveTimer = setInterval(() => {
       App.saveToLocalStorage();
-    }, 3000); // 30초 대신 즉각적인 확인을 돕기 위해 30초 내외 또는 blur 중심 제어
+    }, 30000); // 30초 내외 또는 blur 중심 제어
   },
 
   /**
@@ -1728,6 +1722,32 @@ const App = {
   openFinalPreview: function () {
     this.saveToLocalStorage();
     PDFExport.openPreview(this.report);
+  },
+
+  /**
+   * 오래되거나 누락된 탐구 보고서 데이터 필드를 기본 템플릿과 비교하여 채워주는 마이그레이션 함수
+   */
+  ensureReportSchema: function (rep) {
+    if (!rep) return JSON.parse(JSON.stringify(this.defaultReportTemplate));
+    const defaultTemplate = JSON.parse(JSON.stringify(this.defaultReportTemplate));
+    
+    const merge = (target, source) => {
+      for (const key in source) {
+        if (source.hasOwnProperty(key)) {
+          if (target[key] === undefined || target[key] === null) {
+            target[key] = source[key];
+          } else if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
+            if (typeof target[key] !== 'object' || target[key] === null) {
+              target[key] = {};
+            }
+            merge(target[key], source[key]);
+          }
+        }
+      }
+    };
+    
+    merge(rep, defaultTemplate);
+    return rep;
   },
 
   /**
@@ -1874,7 +1894,7 @@ const App = {
     const currentUser = localStorage.getItem("antigravity_current_user");
     if (!currentUser) return;
 
-    const usersDbRaw = localStorage.getItem("antigravity_users_db");
+    const usersDbRaw = localStorage.getItem("antigravity_users_db") || "{}";
     if (!usersDbRaw) return;
 
     try {
@@ -1913,9 +1933,6 @@ const App = {
     }
   },
 
-  /**
-   * Gemini API 설정 모달 제어
-   */
   /**
    * AI API 설정 모달 제어
    */
@@ -2242,7 +2259,7 @@ const App = {
     }
   },
 
-      suggestVariablesWithAi: async function () {
+  suggestVariablesWithAi: async function () {
     const subject = this.report.step_1.교과목.과목명;
     const topic = this.report.step_2.선택_주제;
     const inquiry_type = this.report.step_2.탐구유형;
