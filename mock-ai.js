@@ -367,7 +367,7 @@ ${ragContextStr}
    - 각 추천은 "refined_keyword" (대체 키워드명), "subject_area" (연계교과단원명)를 포함해야 합니다.
 
 [⚠️ 절대 규칙 - 필수 준수 사항]
-- 대학 과정의 어려운 개념(군론, 대칭군, 환론, 디오판토스, 복소평면 등)은 절대 배제하여 순수 고교 범위 내의 주제로만 candidates를 설계하십시오.
+- 대학 과정의 어려운 개념(군론, 대칭군, 환론, 디오판토스, 복소평면 등)은 절대 배제하여 수시 고교 범위 내의 주제로만 candidates를 설계하십시오.
 - 응답은 마크다운 코드블록(\`\`\`json) 기호 없이 반드시 아래 JSON 형식으로만 완벽하게 반환하세요.
 
 응답 예시 JSON 형식:
@@ -408,7 +408,7 @@ ${ragContextStr}
   /**
    * 6.2 AI 답변 추천 패턴 (각 텍스트 필드별 3개 추천 제공)
    */
-    getSuggestions: async function (step, field, report) {
+  getSuggestions: async function (step, field, report) {
     const provider = localStorage.getItem("active_ai_provider") || "gemini";
     const activeKey = localStorage.getItem(`${provider}_api_key`);
     if (!activeKey || provider === "gemini-web-bridge") {
@@ -459,8 +459,7 @@ ${ragContextStr}
     }
   },
 
-
-    simulateGetSuggestions: function (step, field, report) {
+  simulateGetSuggestions: function (step, field, report) {
     const subject = report.step_1?.교과목?.과목명 || "물리학Ⅰ";
     const topic = report.step_2?.선택_주제 || "자유 탐구";
     const type = report.step_2?.탐구유형 || "experiment";
@@ -542,7 +541,7 @@ ${ragContextStr}
 
     if (step === 7) {
       const hyp = report.step_4?.가설 || "인과 상관관계";
-      if (field === "사실_정리") {
+      if (field === "facts" || field === "사실_정리") {
         return [
           `측정 결과, 조작 변수가 수치적으로 2배, 3배 상승할 때 종속 결과 데이터 역시 1.5배, 2.9배로 거의 유사하게 곡선 비례하여 급등하는 사실을 통계적으로 포착함 (결정계수 R² = 0.94 확인).`,
           `수치 시뮬레이션 모델 검증 결과, 교과 이론에 기반한 지수함수적 하강 경향성과 실제 수집한 측정 로그 데이터의 꺾임 형태가 전체 구간에서 약 3.8% 수준의 극소 오차만을 남긴 채 일치함을 확인함.`,
@@ -569,7 +568,6 @@ ${ragContextStr}
       "AI 추천 예문 후보 3: 측정 과정의 한계점이나 오차 발생 요인을 솔직하게 수치와 함께 기록하면 신뢰성이 상승합니다."
     ];
   },
-
 
   checkHypothesis: function (hyp, rationale, variables) {
     const hasIfThen = hyp.includes("한다면") || hyp.includes("할 것이다") || hyp.includes("되면");
@@ -695,7 +693,7 @@ ${ragContextStr}
       wellConnected = ["함수적 모델링 구축", "도함수를 활용한 변화율 극대값 탐색"];
       needsImprovement = ["실제 물리 환경 제약 요소를 반영한 도메인 범위 설정", "독립 변인의 불연속성 극복을 위한 수치적 이산화 보강"];
       notRelated = ["생명체 삼투압 조절 메커니즘 분석", "지진파 P파 S파 전파 거동 측정"];
-      overallComment = `본 주제는 수학적 모델을 구축하고 변화율을 정량화하려는 노력이 돋보입니다. 교과서에서 다루는 미분 계수 또는 수열의 극한 수렴성이 실제 현실 데이터의 복잡성과 만났을 때 생기는 격차를 분석에 명시해 주면, 더욱 입체적인 탐구가 될 것입니다.`;
+      overallComment = `본 수학적 탐구 설계는 대수 및 해석 단원 내용요소와 잘 밀착되어 설계되었습니다. 다만 수학적 모델링은 실제 조건과의 오차가 존재하므로 모델의 가정 한계 영역이나 이산적인 표본 데이터 오차 원인을 스스로 논증하는 메타인지 요소를 7단계 서두에 1줄 기입해 보기를 조언합니다.`;
     } else {
       wellConnected = ["독립 변인과 종속 결과의 인과 모델링", "측정 데이터를 바탕으로 한 추론 전개"];
       needsImprovement = ["선행 지식(교과 성취기준 내용)의 핵심 용어를 가설 근거에 추가 명시", "오차를 줄이기 위한 통제 장치 정밀화"];
@@ -868,7 +866,7 @@ ${ragContextStr}
         },
         {
           title: `천체 관측 데이터 분석을 통한 ${mainKwName} 운동의 궤도 요소 도출`,
-          description: `케플러 법칙과 만유인력 공식을 기반으로 행성 및 ${mainKwName} 궤도를 타원 모델링하여 주기 상수를 검증하는 탐구`
+          description: `케플러 법칙 and 만유인력 공식을 기반으로 행성 및 ${mainKwName} 궤도를 타원 모델링하여 주기 상수를 검증하는 탐구`
         },
         {
           title: `지구 시스템 내 탄소 순환 메커니즘과 ${mainKwName}의 조절 기능 연구`,
@@ -1007,7 +1005,6 @@ ${ragContextStr}
       return this.simulateSuggestVariables(subject, topic, inquiry_type, hypothesis, slots);
     }
   },
-
 
   simulateSuggestVariables: function (subject, topic, inquiry_type, hypothesis, slots) {
     const result = {};
@@ -1213,7 +1210,7 @@ ${ragContextStr}
         } else if (isPureMath) {
           val = "1차 테일러 급수 근사 함수 vs 실제 비선형 삼각함수 그래프";
         } else {
-          val = `${mainKw} 대조군과 실험군 비교 집단`;
+          val = `${mainKw} 대조군 and 실험군 비교 집단`;
         }
       } else if (s === "독립 요인") {
         if (isDrawingOrArt) {
@@ -1263,8 +1260,6 @@ ${ragContextStr}
 
     return result;
   },
-
-
 
   validateThemeCurriculum: function (subject, theme) {
     const text = theme.toLowerCase();
