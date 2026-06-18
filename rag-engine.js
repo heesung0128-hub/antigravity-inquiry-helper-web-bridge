@@ -92,8 +92,8 @@ const RAGEngine = {
    * 문자열 간의 유사도를 계산하는 Jaccard 및 토큰 매핑 기반 유틸리티 함수
    */
   calculateTextSimilarity: function (str1, str2) {
-    const tokens1 = new Set(str1.split(/[\s,./?!#~@%^&*()_+=\[\]{}|\:;'"<>`\-]+/).filter(t => t.length > 1));
-    const tokens2 = new Set(str2.split(/[\s,./?!#~@%^&*()_+=\[\]{}|\:;'"<>`\-]+/).filter(t => t.length > 1));
+    const tokens1 = new Set(str1.split(/[\s,./?!#~@%^&*()_+=\[\]{}|\:;'\"<>`\-]+/).filter(t => t.length > 1));
+    const tokens2 = new Set(str2.split(/[\s,./?!#~@%^&*()_+=\[\]{}|\:;'\"<>`\-]+/).filter(t => t.length > 1));
 
     if (tokens1.size === 0 || tokens2.size === 0) return 0;
 
