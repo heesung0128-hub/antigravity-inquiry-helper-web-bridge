@@ -1615,7 +1615,7 @@ const App = {
         example: "키워드: #충돌, #에너지보존, #MBL센서\n최종주제: 'MBL 단일 역학 센서를 이용한 평면 충돌 시 에너지 분산 양상의 정량 분석'"
       },
       3: {
-        help: "핵심 질문은 모호한 의문문이 아닌, 정량 분석이 가능한 관계형 의문문으로 설정하세요. 교과목의 특정 대단원 내용 요소가 직접 투영될수록 탐구의 깊이가 인정받기 좋습니다.",
+        help: "핵심 질문은 모호한 의문문이 아닌, 정량 분석이 가능한 관계형 의문문으로 설정하세요. 32과목의 특정 대단원 내용 요소가 직접 투영될수록 탐구의 깊이가 인정받기 좋습니다.",
         example: "질문: '공기 저항이 작용할 때, 질량비가 다른 두 물체의 충돌 전후 운동량 변화량은 선형적 수렴 값을 나타내는가?'"
       },
       4: {
@@ -1713,7 +1713,7 @@ const App = {
     if (this.autoSaveTimer) clearInterval(this.autoSaveTimer);
     this.autoSaveTimer = setInterval(() => {
       App.saveToLocalStorage();
-    }, 30000); // 30초 내외 또는 blur 중심 제어
+    }, 3000); // 30초 대신 즉각적인 확인을 돕기 위해 30초 내외 또는 blur 중심 제어
   },
 
   /**
@@ -1894,7 +1894,7 @@ const App = {
     const currentUser = localStorage.getItem("antigravity_current_user");
     if (!currentUser) return;
 
-    const usersDbRaw = localStorage.getItem("antigravity_users_db") || "{}";
+    const usersDbRaw = localStorage.getItem("antigravity_users_db");
     if (!usersDbRaw) return;
 
     try {
@@ -1933,6 +1933,9 @@ const App = {
     }
   },
 
+  /**
+   * Gemini API 설정 모달 제어
+   */
   /**
    * AI API 설정 모달 제어
    */
@@ -2026,6 +2029,46 @@ const App = {
     }
     
     const modal = document.getElementById("web-bridge-modal-root");
+    if (modal) {
+      modal.style.display = "none";
+    }
+  },
+
+  askApiFallback: function () {
+    return new Promise((resolve, reject) => {
+      const modal = document.getElementById("api-fallback-modal-root");
+      if (!modal) {
+        resolve("simulated");
+        return;
+      }
+      modal.style.display = "flex";
+      window.apiFallbackResolve = (choice) => {
+        modal.style.display = "none";
+        resolve(choice);
+      };
+      window.apiFallbackReject = reject;
+    });
+  },
+
+  selectApiFallback: function (choice) {
+    if (window.apiFallbackResolve) {
+      window.apiFallbackResolve(choice);
+      window.apiFallbackResolve = null;
+      window.apiFallbackReject = null;
+    }
+    const modal = document.getElementById("api-fallback-modal-root");
+    if (modal) {
+      modal.style.display = "none";
+    }
+  },
+
+  closeApiFallbackModal: function () {
+    if (window.apiFallbackReject) {
+      window.apiFallbackReject(new Error("사용자가 모달을 닫았습니다."));
+      window.apiFallbackResolve = null;
+      window.apiFallbackReject = null;
+    }
+    const modal = document.getElementById("api-fallback-modal-root");
     if (modal) {
       modal.style.display = "none";
     }
