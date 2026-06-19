@@ -870,7 +870,7 @@ const App = {
    * stlite 기반 Streamlit 데이터 통계 분석기 실행 (새 창)
    */
   openStreamlitAnalyzer: function () {
-    window.open("easy-data-analyzer.html", "_blank");
+    window.open("https://heesung0128-hub.github.io/DD-data-analyzer/", "_blank");
   },
 
   handleGenericInput: function (stepNum) {
@@ -1635,7 +1635,7 @@ const App = {
         example: "결론: '실측 결과 가설의 비선형 손실 경향성은 입증되었으나, 카트 바퀴 자체의 물리적 정지 마찰계수가 통제되지 못한 한계가 있어 부분지지 판정함.'"
       },
       8: {
-        help: "내가 탐구한 주제와 가장 유사한 선행 문헌과 서적을 정리하세요. 대학 수준의 학술 검색을 모의 수행함으로써 인용 출처 작성법과 보고서의 타당성 검증 프로세스를 체득합니다.",
+        help: "내가 탐구한 주제와 가장 유사한 선행 문헌 and 서적을 정리하세요. 대학 수준의 학술 검색을 모의 수행함으로써 인용 출처 작성법과 보고서의 타당성 검증 프로세스를 체득합니다.",
         example: "학술논문: 김영희, '고등학교 물리 실험에서 MBL 센서를 활용한 탄성충돌의 오차 보정 연구', 한국과학교육학회, 2023. (★ 학생수준적합)"
       }
     };
