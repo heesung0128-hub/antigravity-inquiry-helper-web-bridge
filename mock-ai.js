@@ -204,6 +204,15 @@ const MockAI = {
     const provider = localStorage.getItem("active_ai_provider") || "gemini";
     const activeKey = localStorage.getItem(`${provider}_api_key`);
     if (!activeKey && provider !== "gemini-web-bridge") {
+      try {
+        const choice = await App.askApiFallback();
+        if (choice === "bridge") {
+          localStorage.setItem("active_ai_provider", "gemini-web-bridge");
+          return await this.suggestKeywords(context);
+        }
+      } catch (err) {
+        console.log("사용자가 모드를 취소했습니다. 모의 AI 모드로 진행합니다.");
+      }
       // 오프라인 모의(Simulation) 모드일 때도 학생의 지망 학과(department) 및 진로(career) 정보를 파싱하여 
       // 그에 최적화된 맞춤 키워드 6종을 동적으로 추천하도록 지능화합니다.
       const dept = (department || "").trim();
@@ -289,6 +298,15 @@ const MockAI = {
     const provider = localStorage.getItem("active_ai_provider") || "gemini";
     const activeKey = localStorage.getItem(`${provider}_api_key`);
     if (!activeKey && provider !== "gemini-web-bridge") {
+      try {
+        const choice = await App.askApiFallback();
+        if (choice === "bridge") {
+          localStorage.setItem("active_ai_provider", "gemini-web-bridge");
+          return await this.suggestTopics(context);
+        }
+      } catch (err) {
+        console.log("사용자가 모드를 취소했습니다. 모의 AI 모드로 진행합니다.");
+      }
       // API Key가 없으면 모의(Simulated) AI 제안 모드로 폴백하여 오류 없이 실행
       return this.generateSimulatedTopics(subject, kwList, motivation, forceDirect);
     }
@@ -367,7 +385,7 @@ ${ragContextStr}
    - 각 추천은 "refined_keyword" (대체 키워드명), "subject_area" (연계교과단원명)를 포함해야 합니다.
 
 [⚠️ 절대 규칙 - 필수 준수 사항]
-- 대학 과정의 어려운 개념(군론, 대칭군, 환론, 디오판토스, 복소평면 등)은 절대 배제하여 수시 고교 범위 내의 주제로만 candidates를 설계하십시오.
+- 대학 과정의 어려운 개념(군론, 대칭군, 환론, 디오판토스, 복소평면 등)은 절대 배제하여 순수 고교 범위 내의 주제로만 candidates를 설계하십시오.
 - 응답은 마크다운 코드블록(\`\`\`json) 기호 없이 반드시 아래 JSON 형식으로만 완벽하게 반환하세요.
 
 응답 예시 JSON 형식:
@@ -541,7 +559,7 @@ ${ragContextStr}
 
     if (step === 7) {
       const hyp = report.step_4?.가설 || "인과 상관관계";
-      if (field === "facts" || field === "사실_정리") {
+      if (field === "사실_정리") {
         return [
           `측정 결과, 조작 변수가 수치적으로 2배, 3배 상승할 때 종속 결과 데이터 역시 1.5배, 2.9배로 거의 유사하게 곡선 비례하여 급등하는 사실을 통계적으로 포착함 (결정계수 R² = 0.94 확인).`,
           `수치 시뮬레이션 모델 검증 결과, 교과 이론에 기반한 지수함수적 하강 경향성과 실제 수집한 측정 로그 데이터의 꺾임 형태가 전체 구간에서 약 3.8% 수준의 극소 오차만을 남긴 채 일치함을 확인함.`,
@@ -551,7 +569,7 @@ ${ragContextStr}
         return [
           `초기에 수립했던 가설 [${hyp}] 명제에서 예측한 비선형적 증가 추이가 실제 실측 데이터 그래프 상에서도 높은 통계적 결정계수(R² = 0.94)를 나타내며 입증되었으므로 가설을 완벽히 '지지'합니다.`,
           `저온 및 중온 영역 조건에서는 가설의 선형적 인과 관계가 명료하게 입증되었으나, 고온 구간에서는 마찰 손실 및 공기 저항 오차로 인해 일부 예측 편차가 관찰되었으므로 부분적으로 타당함을 고려하여 '부분지지'합니다.`,
-          `로우 데이터 분석 결과, 조작 조건의 증감 방향과 종속 반응의 상관계수는 무의미한 제로 수준에 가까웠으며, p-value가 유의수준 0.05보다 훨씬 컸기 때문에 과학적 인과를 증명하지 못하여 가설을 '기각(불지지)'합니다.`
+          `개별 로우 데이터 분석 결과, 조작 조건의 증감 방향과 종속 반응의 상관계수는 무의미한 제로 수준에 가까웠으며, p-value가 유의수준 0.05보다 훨씬 컸기 때문에 과학적 인과를 증명하지 못하여 가설을 '기각(불지지)'합니다.`
         ];
       } else if (field === "한계_후속") {
         return [
@@ -628,6 +646,15 @@ ${ragContextStr}
     const provider = localStorage.getItem("active_ai_provider") || "gemini";
     const activeKey = localStorage.getItem(`${provider}_api_key`);
     if (!activeKey && provider !== "gemini-web-bridge") {
+      try {
+        const choice = await App.askApiFallback();
+        if (choice === "bridge") {
+          localStorage.setItem("active_ai_provider", "gemini-web-bridge");
+          return await this.selfCheckConnection(subject, report);
+        }
+      } catch (err) {
+        console.log("사용자가 모드를 취소했습니다. 모의 AI 모드로 진행합니다.");
+      }
       return this.simulateSelfCheckConnection(subject, report);
     }
 
@@ -693,7 +720,7 @@ ${ragContextStr}
       wellConnected = ["함수적 모델링 구축", "도함수를 활용한 변화율 극대값 탐색"];
       needsImprovement = ["실제 물리 환경 제약 요소를 반영한 도메인 범위 설정", "독립 변인의 불연속성 극복을 위한 수치적 이산화 보강"];
       notRelated = ["생명체 삼투압 조절 메커니즘 분석", "지진파 P파 S파 전파 거동 측정"];
-      overallComment = `본 수학적 탐구 설계는 대수 및 해석 단원 내용요소와 잘 밀착되어 설계되었습니다. 다만 수학적 모델링은 실제 조건과의 오차가 존재하므로 모델의 가정 한계 영역이나 이산적인 표본 데이터 오차 원인을 스스로 논증하는 메타인지 요소를 7단계 서두에 1줄 기입해 보기를 조언합니다.`;
+      overallComment = `본 주제는 수학적 모델을 구축하고 변화율을 정량화하려는 노력이 돋보입니다. 교과서에서 다루는 미분 계수 또는 수열의 극한 수렴성이 실제 현실 데이터의 복잡성과 만났을 때 생기는 격차를 분석에 명시해 주면, 더욱 입체적인 탐구가 될 것입니다.`;
     } else {
       wellConnected = ["독립 변인과 종속 결과의 인과 모델링", "측정 데이터를 바탕으로 한 추론 전개"];
       needsImprovement = ["선행 지식(교과 성취기준 내용)의 핵심 용어를 가설 근거에 추가 명시", "오차를 줄이기 위한 통제 장치 정밀화"];
@@ -710,289 +737,48 @@ ${ragContextStr}
   },
 
   /**
-   * API Key가 없을 경우 작동하는 고품질 모의(Simulated) AI 탐구 주제 생성기
+   * 6.1과 7.2 단계 등에서 AI 도움말 분석 결과를 받아와 각 텍스트 영역의 오차 진단 및 대안 제시
+   * 절대 규정: 별점 금지, 점수 금지, '세특' 단어 사용 절대 금지
    */
-  generateSimulatedTopics: function (subject, keywords, motivation, forceDirect = false) {
-    const kwList = keywords || [];
-    const mainKw = kwList.length > 0 ? kwList[0] : "실생활 현상";
-    
-    // 1. 교육과정 정합성 진단 시뮬레이션
-    const hasUnsuitable = kwList.some(k => ["영화", "웹툰", "게임", "소설", "음악", "미술"].includes(k));
-    const hasRedirect = kwList.some(k => ["신호등", "큐브", "암호"].includes(k));
-
-    if (hasUnsuitable && !forceDirect) {
-      return {
-        verdict: "unsuitable",
-        reason: `입력하신 키워드 [${kwList.join(", ")}]는 선택하신 과목 [${subject}]의 고등학교 교육과정 성취기준 내용요소와 학술적인 연계가 현저히 떨어집니다. 고등학교 보고서는 교과 단원의 구체적 개념(예: 지수함수, 뉴턴 운동 법칙 등)과 연계되어야 생활기록부 기재가 가능합니다.`,
-        suggestions: [
-          { refined_keyword: "빛의굴절", subject_area: "물리학Ⅰ 파동과 입자" },
-          { refined_keyword: "소음데시벨", subject_area: "수학Ⅰ 상용로그의 활용" },
-          { refined_keyword: "감염병확산", subject_area: "생명과학 개체군과 생장곡선" }
-        ]
-      };
-    }
-
-    if (hasRedirect && !forceDirect) {
-      return {
-        verdict: "redirect",
-        reason: `입력하신 키워드 [${kwList.join(", ")}]는 고교 수준의 [${subject}] 과목에서 직접적으로 다루기에는 범위가 다소 어긋나거나 대학 과정 개념(예: 군론, 디오판토스 등)으로 억지 연결될 가능성이 큽니다. 대학 과정의 어려운 개념 대신 아래와 같은 정규 교과 단원(지수로그, 삼각함수, 수열, 뉴턴 물리 등)과의 우회 융합 방향을 권장합니다.`,
-        directions: [
-          { emoji: "🚗", label: "통계적 대기시간 분석 및 신호 주기 모델링", example: "상관계수" },
-          { emoji: "📐", label: "수열의 극한 및 프랙탈 눈송이 기하학 분석", example: "수열" },
-          { emoji: "💻", label: "최적 경로 탐색 알고리즘과 행렬/벡터 연산", example: "알고리즘" }
-        ]
-      };
-    }
-
-    const mainKwName = mainKw;
-    const subKw = kwList.length > 1 ? kwList[1] : "통계 분석";
-    const thirdKw = kwList.length > 2 ? kwList[2] : "정량 모델링";
-    const subjName = subject || "과학";
-
-    let category = "general";
-    const subL = subjName.toLowerCase();
-    
-    if (subL.includes("대수")) {
-      category = "algebra";
-    } else if (subL.includes("물리") || subL.includes("역학") || subL.includes("전자기") || subL.includes("에너지") || subL.includes("우주") || subL.includes("기하")) {
-      category = "physics";
-    } else if (subL.includes("화학") || subL.includes("물질") || subL.includes("반응")) {
-      category = "chemistry";
-    } else if (subL.includes("생명") || subL.includes("세포") || subL.includes("유전") || subL.includes("대사") || subL.includes("생물")) {
-      category = "biology";
-    } else if (subL.includes("지구") || subL.includes("기후") || subL.includes("환경") || subL.includes("생태")) {
-      category = "earth_science";
-    } else if (subL.includes("수학") || subL.includes("미적분") || subL.includes("통계") || subL.includes("확률") || subL.includes("함수")) {
-      category = "math";
-    }
-
-    const templates = {
-      algebra: [
-        {
-          title: `지수·로그함수를 활용한 ${mainKwName}의 성장 추이 및 최적 수렴 시나리오 모델링`,
-          description: `스토리 조회수 유입량, 세포 증식, 음향 데시벨 감쇄 등 급격한 증감 후 포화하는 실제 현상을 **지수/로그함수 모델**로 추적하는 탐구`
-        },
-        {
-          title: `삼각함수의 파동 공식을 적용한 ${mainKwName} 현상의 감정선/갈등 주기 변화 분석`,
-          description: `소설/영화 서사 내 갈등의 파고, 소리의 음파 진동 등 주기적 왕복 운동 패턴을 **삼각함수($y=a\\sin(bx)$) 그래프**로 정량 모델링하는 탐구`
-        },
-        {
-          title: `드로잉 비율 최적화를 위한 삼각비와 호도법의 실용적 수학 작화 분석`,
-          description: `웹툰 투시 도법이나 원근 앵글 묘사 시 관절 각도와 피사체 크기를 **호도법과 삼각비 공식**을 통해 대수적으로 계산 및 설계하는 탐구`
-        },
-        {
-          title: `등비수열 및 수열의 합 공식을 적용한 ${mainKwName}의 단계별 레이아웃 패턴 연구`,
-          description: `컷 배치 간격의 점진적 변화, 다세대 개체수 증식 등 규칙적 컷 연출을 **등차/등비수열의 일반항 및 합($S_n$)**으로 대수 해석하는 탐구`
-        },
-        {
-          title: `수학적 귀납법을 활용한 ${mainKwName} 거동 알고리즘의 무한 루프 안정성 검증`,
-          description: `반복적 프레임 렌더링 루프나 순환 수열 패턴이 무한히 거듭되어도 안정을 유지함을 **수학적 귀납법 명제**로 대조 증명하는 탐구`
-        }
-      ],
-      physics: [
-        {
-          title: `MBL 센서를 활용한 ${mainKwName} 운동 과정의 오차 요인 분석 및 보정 공식 유도`,
-          description: `실측 실험 중 발생하는 저항이나 마찰력을 ${mainKwName} 관점에서 계량화하고, 수치적 보정 모델을 수립하여 이론값과의 일치도를 높이는 탐구`
-        },
-        {
-          title: `수학적 모델링을 통한 ${mainKwName} 현상에서의 에너지 전환 효율 분석`,
-          description: `에너지 보존 법칙을 바탕으로 ${mainKwName} 시스템 내의 손실률을 계산하고, 외부 변인에 따른 효율 극대화 방안을 제안하는 탐구`
-        },
-        {
-          title: `컴퓨터 시뮬레이션을 활용한 ${mainKwName} 조건에 따른 역학적 거동 예측`,
-          description: `수치 해석 프로그램을 이용해 ${mainKwName} 변수 변화에 따른 동역학적 변화를 시뮬레이션하고, 물리적 안정성을 검증하는 탐구`
-        },
-        {
-          title: `실생활 도구에 숨어 있는 ${mainKwName}의 역학적 메커니즘과 효율성 개선 설계`,
-          description: `주변의 물리적 장치 속 ${mainKwName} 원리를 분석하고, 조작 변인을 통제하여 효율성을 최적화하는 공학적 탐구`
-        },
-        {
-          title: `전자기적 원리와 ${mainKwName}을 결합한 차세대 친환경 발전 효율성 비교`,
-          description: `전자기 유도 현상과 ${mainKwName}의 연동성을 탐색하여, 소형 발전기 작동 시 최적의 전력 생산 조건들을 도출하는 탐구`
-        }
-      ],
-      chemistry: [
-        {
-          title: `반응 촉매 및 ${mainKwName} 조건이 화학 반응 속도에 미치는 영향의 정량적 연구`,
-          description: `다양한 촉매와 ${mainKwName} 농도 변화에 따른 기체 발생률을 측정하고, 반응 속도 상수 k값을 도출하는 실증 탐구`
-        },
-        {
-          title: `화학 평형과 ${mainKwName} 변인 통제를 통한 최적의 수득률 도출 시뮬레이션`,
-          description: `르샤틀리에 원리를 기반으로 온도, 농도, ${mainKwName} 조건에 따른 화학 평형 이동을 관찰하고 최적 효율 조건을 분석하는 탐구`
-        },
-        {
-          title: `생활 속 친환경 신소재의 ${mainKwName} 분해 효율성과 환경적 개선 영향 평가`,
-          description: `생분해성 물질의 분해 거동을 ${mainKwName} 조건에 따라 실측하고, 환경 오염 저감 효과를 화학 스펙트럼으로 비교하는 탐구`
-        },
-        {
-          title: `${mainKwName} 개념을 활용한 전기화학 셀의 전압 변화 및 내부 저항 오차 규명`,
-          description: `전해질 농도와 ${mainKwName}에 따른 전위차를 측정하고, 네른스트 식을 활용해 용액의 화학적 거동을 계량화하는 탐구`
-        },
-        {
-          title: `분자 구조식 분석을 통한 ${mainKwName} 화합물의 열역학적 안정성 비교`,
-          description: `다양한 화합물 속 ${mainKwName} 결합력을 이론적으로 비교하고, 연소열 실측을 통해 결합 에너지를 유도하는 탐구`
-        }
-      ],
-      biology: [
-        {
-          title: `효소 활성 경로 분석을 통한 ${mainKwName} 요인의 생체 대사 영향성 탐색`,
-          description: `유기 촉매 활성 반응 속도를 ${mainKwName} 조건별로 실측하고, 온도 및 pH 민감도 한계 곡선을 기술하는 탐구`
-        },
-        {
-          title: `SIR 감염병 확산 모델에 ${mainKwName} 변수를 추가한 수학적 감염 곡선 시뮬레이션`,
-          description: `학교 내부 또는 지역 사회의 감염 거동을 ${mainKwName} 변인과 연동하여 해석하고, 방역 차단 효과를 모델링하는 융합 탐구`
-        },
-        {
-          title: `식물의 삼투 현상과 ${mainKwName} 농도가 세포막 물질 이동에 미치는 영향 연구`,
-          description: `농도 변화에 따른 세포 수축 및 팽창율을 ${mainKwName} 척도로 계측하여 세포 내외의 유체 역학적 이동 속도를 밝히는 탐구`
-        },
-        {
-          title: `유전 알고리즘과 ${mainKwName} 데이터를 접목한 세대 변화 모델의 최적화 예측`,
-          description: `환경 제약 요소를 ${mainKwName} 파라미터로 코딩하여, 다세대 생존율 시뮬레이션을 돌려 생물학적 유전 현상을 모델링하는 탐구`
-        },
-        {
-          title: `친환경 바이오매스의 ${mainKwName} 활용 조건에 따른 미생물 생장 속도 분석`,
-          description: `배양 환경 조건과 ${mainKwName} 물질을 통제하며 미생물 개체수 변화 곡선을 추적하고 통계적 성장을 피팅하는 탐구`
-        }
-      ],
-      earth_science: [
-        {
-          title: `공공 대기질 빅데이터와 ${mainKwName}의 시계열 상관관계 분석`,
-          description: `미세먼지, 온실가스 거동을 ${mainKwName} 데이터와 매칭하고, 계절별 흐름을 선형 회귀 분석하는 데이터 통계 탐구`
-        },
-        {
-          title: `기후변화 시나리오 모델링을 활용한 ${mainKwName} 변수의 생태적 위험 진단`,
-          description: `지구 온난화 시뮬레이션을 통해 해수면 온도 및 ${mainKwName} 변수의 피드백 고리를 수학적으로 추론하는 탐구`
-        },
-        {
-          title: `천체 관측 데이터 분석을 통한 ${mainKwName} 운동의 궤도 요소 도출`,
-          description: `케플러 법칙 and 만유인력 공식을 기반으로 행성 및 ${mainKwName} 궤도를 타원 모델링하여 주기 상수를 검증하는 탐구`
-        },
-        {
-          title: `지구 시스템 내 탄소 순환 메커니즘과 ${mainKwName}의 조절 기능 연구`,
-          description: `대기-해양-지각 사이의 탄소 평형 이동 속도를 ${mainKwName} 관점에서 분석하고 인위적 탄소 저감 효율을 계산하는 탐구`
-        },
-        {
-          title: `토양 및 수질 환경 센서 데이터 분석을 통한 ${mainKwName}의 정화 효율성 계량화`,
-          description: `오염수 흐름에서 ${mainKwName} 투입 조건에 따른 이온 전도도와 유기물 농도의 감소율을 실시간 계측 분석하는 탐구`
-        }
-      ],
-      math: [
-        {
-          title: `실생활 변화율을 분석하는 ${mainKwName} 기반 미적분 모델링 연구`,
-          description: `연속적인 변화량을 ${mainKwName} 함수로 정밀 정의하고, 미분법과 적분 정리를 적용해 최적의 한계치와 면적을 연산하는 탐구`
-        },
-        {
-          title: `등비수열 및 로그 스케일을 적용한 ${mainKwName} 현상의 감쇄 법칙 규명`,
-          description: `구면파 감쇠나 충격 파형 등 기하급수적으로 축소되는 ${mainKwName} 거동을 상용로그 스케일 수식으로 정량 모델링하는 탐구`
-        },
-        {
-          title: `공공 오픈 API 데이터셋을 활용한 ${mainKwName} 분포의 통계적 가설 검증`,
-          description: `대용량 샘플 데이터를 수집하여 ${mainKwName} 변수에 대한 정규성 검정 및 t-검정을 수행해 유의성을 판단하는 실증 탐구`
-        },
-        {
-          title: `뉴턴의 냉각 법칙 및 ${mainKwName} 함수를 융합한 동적 수치 예측 모델 구축`,
-          description: `시간 흐름에 따른 변동 데이터를 미분방정식으로 도출하여, ${mainKwName} 변수 파라미터를 조절하며 수치 시뮬레이션을 구현하는 탐구`
-        },
-        {
-          title: `기하학적 벡터 분석을 활용한 ${mainKwName}의 힘의 합성 및 공간적 경로 최적화`,
-          description: `공간 좌표계 상에서 ${mainKwName} 벡터 합과 내적 공식을 활용하여 에너지 소비를 최소화하는 이동 경로를 수학적으로 유도하는 탐구`
-        }
-      ],
-      general: [
-        {
-          title: `융합적 관점에서 바라본 ${mainKwName}의 과학적 메커니즘과 실생활 적용성 연구`,
-          description: `이종 교과목 성취기준을 연결하고 ${mainKwName} 개념의 학술적 위상을 입체적으로 고찰하는 융합 탐구`
-        },
-        {
-          title: `${mainKwName} 변인을 통제한 조건별 실측 데이터 수집 및 오차 유도 모델 수립`,
-          description: `독립 조건들을 체계적으로 변화시키면서 수집된 ${mainKwName} 데이터를 바탕으로 분산 분석(ANOVA)을 수행하는 실증 탐구`
-        },
-        {
-          title: `컴퓨터 모델을 활용한 ${mainKwName} 요인 변화에 따른 복잡계 네트워크 안정성 분석`,
-          description: `프로그래밍 시뮬레이터를 이용하여 ${mainKwName} 노드 파라미터를 변경하며 안정적인 수렴 조건을 찾는 탐구`
-        },
-        {
-          title: `선행 학술 논문 메타 분석을 통한 ${mainKwName} 연구 동향 및 한계점 극복 대안 제안`,
-          description: `최근 5개년간의 핵심 학술 논문들을 비교하여 ${mainKwName} 해결방안에 대한 타당성을 종합 비교하는 문헌 분석 탐구`
-        },
-        {
-          title: `설문조사 및 기술 통계를 결합한 청소년의 ${mainKwName} 인지 수준과 행동 변화 상관관계 분석`,
-          description: `교내 표본 집단을 대상으로 문항을 설계 및 통계 분석하여 ${mainKwName} 현상이 미치는 유의미한 영향성을 진단하는 탐구`
-        }
-      ]
-    };
-
-    const selectedPool = templates[category] || templates.general;
-    const candidates = selectedPool.map((item, idx) => {
-      let matched_content_elements = [];
-      let expected_variables = [];
-
-      if (category === "algebra" || category === "math") {
-        matched_content_elements = ["지수함수와 로그함수", "삼각함수", "수열"];
-        expected_variables = ["독립 변수 X (현상 진행 단계)", "종속 변수 Y (누적 데이터 값)"];
-      } else if (category === "physics") {
-        matched_content_elements = ["운동량과 충격량", "역학적 에너지 보존"];
-        expected_variables = ["독립 변수 (속도 또는 질량)", "종속 변수 (충돌 시간 또는 손실 에너지)"];
-      } else if (category === "chemistry") {
-        matched_content_elements = ["반응 속도와 촉매", "화학 평형"];
-        expected_variables = ["독립 변수 (촉매 유무/농도/온도)", "종속 변수 (가스 발생 속도 또는 평형상수)"];
-      } else if (category === "biology") {
-        matched_content_elements = ["생태계 상호작용", "개체군 생장 곡선"];
-        expected_variables = ["독립 변수 (배양 시간/환경 요인)", "종속 변수 (개체군 밀도/효소 활성도)"];
-      } else {
-        matched_content_elements = ["교과 성취기준 단원"];
-        expected_variables = ["조작 변인 (조건 값)", "통제 변인 (환경 조건)"];
-      }
-
-      return {
-        id: `suggest-${idx + 1}`,
-        title: item.title,
-        description: item.description,
-        matched_content_elements,
-        expected_variables
-      };
-    });
-
-    let warningBadge = forceDirect ? " (키워드 적합성 낮음)" : "";
-    if (forceDirect) {
-      candidates.forEach(c => {
-        c.title = c.title + warningBadge;
-      });
-    }
-
-    return {
-      verdict: "direct",
-      candidates: candidates
-    };
-  },
-
-  suggestVariables: async function (subject, topic, inquiry_type, hypothesis, slots) {
+  checkReportDraft: async function (subject, report) {
     const provider = localStorage.getItem("active_ai_provider") || "gemini";
     const activeKey = localStorage.getItem(`${provider}_api_key`);
     if (!activeKey && provider !== "gemini-web-bridge") {
-      return this.simulateSuggestVariables(subject, topic, inquiry_type, hypothesis, slots);
+      try {
+        const choice = await App.askApiFallback();
+        if (choice === "bridge") {
+          localStorage.setItem("active_ai_provider", "gemini-web-bridge");
+          return await this.checkReportDraft(subject, report);
+        }
+      } catch (err) {
+        console.log("사용자가 모드를 취소했습니다. 모의 AI 모드로 진행합니다.");
+      }
+      return this.simulateCheckReportDraft(subject, report);
     }
 
-    const promptText = `당신은 한국 고등학교 1~3학년 학생들의 수학·과학 주제탐구 지도를 맡고 있는 진로 진학 학술 멘토 AI입니다.
-학생의 탐구 기본 정보:
-- 과목명: ${subject}
-- 탐구 주제: ${topic}
-- 탐구 유형: ${inquiry_type}
-- 가설 명제: ${hypothesis}
-- 요구하는 변수 슬롯 목록: ${slots.join(", ")}
+    const promptText = `당신은 고등학교 수학·과학 탐구 보고서 초안 진단용 AI입니다.
+학생이 작성한 보고서 초안의 내용을 상세히 검증하고, 특히 정량적 실측 결과와 초기의 가설/설계가 어떻게 어우러져 한계를 노출했는지 진단하십시오.
 
-[가이드 및 필수 준수 사항]
-1. 각 슬롯(${slots.join(", ")})에 들어갈 학술적이고 정량적인 변인 설계를 추천해 주십시오.
-2. 학생들이 직관적으로 이해할 수 있도록 영어 물리 기호(예: θ, v, I₀, Sn, ΔE, β, γ 등)나 영문 기호 및 영문 단위(J, m/s, radian 등)는 절대로 사용하지 마십시오. 대신 100% 한글 명칭과 알기 쉬운 한글 범위/단위를 조합하여 작성해 주십시오.
-   - 좋은 예시: 단순히 '시간'이 아닌 '앙금 생성 완료 시간 (10초 ~ 60초)'
-   - 좋은 예시: 단순히 '속도'가 아닌 '수레의 초기 속도 (초속 1미터 ~ 3미터)'
-   - 좋은 예시: 단순히 '초기 유입자'가 아닌 '처음 감염된 환자 수 (1명 ~ 10명)'
-3. 대학 과정의 너무 어려운 개념은 배제하고, 고교 수준에서 학교 실험실이나 공공 데이터를 통해 1~2주 내로 직접 통제 및 측정 가능한 실용적인 범위로 제시해 주십시오.
+[학생 탐구 보고서 내용]
+- 관심 과목: ${subject}
+- 최종 주제: ${report.step_2?.선택_주제 || ""}
+- 가설 명제: ${report.step_4?.가설 || ""}
+- 실측 결과(Step 6): ${report.step_6?.실측_기록 || ""}
+- 사실 정리(Step 7): ${report.step_7?.사실_정리 || ""}
+- 가설 검증(Step 7): ${report.step_7?.가설_검증_근거 || ""}
+- 한계/후속(Step 7): ${report.step_7?.한계_후속 || ""}
+
+[⚠️ 절대 규칙 - 필수 준수 사항]
+1. 별표 문자(★)나 그 외의 별점 기호는 절대로 출력하지 마십시오.
+2. '세특', '세부능력', '특기사항', '생활기록부', '생기부' 단어를 절대로 사용하지 마십시오.
+3. 학생들이 자신의 탐구 활동에서 발생한 오차를 두려워하지 않고, '오차의 원인 규명'이 학술적으로 매우 가치 있는 일임을 깨달을 수 있게 긍정적인 메타인지 코멘트를 제공해 주십시오.
 
 응답은 마크다운 코드블록(\`\`\`json) 표식 없이 반드시 아래 구조를 만족하는 순수 JSON 형식으로만 완벽하게 출력하십시오.
 {
-  ${slots.map(s => `"${s}": "구체적인 한글 변인명 (한글 단위/범위 포함)"`).join(",\n  ")}
+  "strength": "가장 논리적으로 훌륭하고 잘 작성된 부분에 대한 격려 및 분석",
+  "weakness": "실험 오차 발생 요인 혹은 정량적 서술 보강이 필요한 점 진단",
+  "actionPlan": "이 오차를 수학적/과학적 원인으로 분석하여 결론에 채워 넣을 수 있는 구체적인 가이드",
+  "overallEvaluation": "전체 초안 검토 메타인지 코멘트 (세특, 생활기록부 단어 절대 금지)"
 }`;
 
     try {
@@ -1001,264 +787,24 @@ ${ragContextStr}
       return parsed;
 
     } catch (e) {
-      console.warn("실시간 AI 변인 설계 제안 실패. 모의 모드로 전환합니다.", e);
-      return this.simulateSuggestVariables(subject, topic, inquiry_type, hypothesis, slots);
+      console.warn("실시간 AI 보고서 진단 평가 실패. 모의 AI 모드로 전환합니다.", e);
+      return this.simulateCheckReportDraft(subject, report);
     }
   },
 
-  simulateSuggestVariables: function (subject, topic, inquiry_type, hypothesis, slots) {
-    const result = {};
-    const topL = (topic || "").toLowerCase();
-    const hypL = (hypothesis || "").toLowerCase();
-    
-    // 1. 대수/함수/드로잉/예술 계열 융합 탐구 키워드 매칭
-    const isDrawingOrArt = topL.includes("드로잉") || topL.includes("비율") || topL.includes("미술") || topL.includes("예술") || topL.includes("대칭") || topL.includes("패턴");
-    
-    // 2. 생명/질병/감염/바이러스 계열 융합 탐구 키워드 매칭
-    const isInfectionOrBio = topL.includes("감염") || topL.includes("바이러스") || topL.includes("질병") || topL.includes("생장") || topL.includes("세포") || topL.includes("면역") || topL.includes("초파리") || topL.includes("수명");
-    
-    // 3. 수열/금융/소비/수익/가격 계열 융합 탐구 키워드 매칭
-    const isFinanceOrSeq = topL.includes("수열") || topL.includes("수익") || topL.includes("가격") || topL.includes("소비") || topL.includes("금융") || topL.includes("할인") || topL.includes("이자");
+  simulateCheckReportDraft: function (subject, report) {
+    const draftText = JSON.stringify(report);
+    let strength = "초기에 설정한 가설과 실측 결과를 1대1로 비교하여 데이터를 유도해 낸 과정의 정직성과 정량성이 매우 모범적입니다.";
+    let weakness = "현실 실험실이나 외부 데이터셋에는 마찰 저항, 통계적 표본 편차 등 수많은 오차 요인이 개입하지만, 현재 초안에는 그 구체적 물리화학적 혹은 통계적 메커니즘 분석이 다소 생략되어 있습니다.";
+    let actionPlan = "측정 데이터 표를 기준으로 이론 공식 대입 시 발생한 수치적 격차(예: 평균 오차율)를 계산하여 추가하고, 이를 '수행 절차상의 한계(예: 센서 해상도 부족 등)'와 결부하여 결론 7단계 한계 항목에 기입해 보세요.";
+    let overallEvaluation = "전체적으로 탐구 보고서의 흐름이 잘 잡혀 있으며, 데이터에 기반한 추론이 명확하게 녹아들어 있습니다. 오차의 발생 요인을 과학적인 원리로 담담히 풀어낸다면 심화 학술 탐구 보고서로서 훌륭한 수준으로 거듭날 것입니다.";
 
-    // 4. 역학/충돌/에너지/속도 계열 융합 탐구 키워드 매칭
-    const isPhysicsOrCol = topL.includes("충돌") || topL.includes("에너지") || topL.includes("속도") || topL.includes("마찰") || topL.includes("센서") || topL.includes("수레");
-
-    // 5. 화학/농도/반응/촉매/앙금 계열 키워드 매칭
-    const isChemistryOrReact = topL.includes("화학") || topL.includes("반응") || topL.includes("촉매") || topL.includes("농도") || topL.includes("앙금") || topL.includes("중화") || topL.includes("산성") || topL.includes("산도") || topL.includes("염기");
-
-    // 6. 기후/대기/미세먼지/지구과학 계열 키워드 매칭
-    const isEarthOrClimate = topL.includes("기후") || topL.includes("대기") || topL.includes("미세먼지") || topL.includes("지구") || topL.includes("온난화") || topL.includes("탄소") || topL.includes("해수면") || topL.includes("토양") || topL.includes("수질");
-
-    // 7. 통계/설문/만족도/청소년/사용시간 계열 키워드 매칭
-    const isSurveyOrStat = topL.includes("설문") || topL.includes("만족도") || topL.includes("청소년") || topL.includes("스마트폰") || topL.includes("게임") || topL.includes("사용량") || topL.includes("사용시간") || topL.includes("sns") || topL.includes("유튜브");
-
-    // 8. 수학/함수/수식/그래프/미적분 계열 키워드 매칭
-    const isPureMath = topL.includes("미적분") || topL.includes("미분") || topL.includes("적분") || topL.includes("함수") || topL.includes("그래프") || topL.includes("극한") || topL.includes("수렴") || topL.includes("기하");
-
-    // [지능형 동적 키워드 추출기]
-    // 학생의 최종주제(topic)와 가설(hypothesis) 문장에서 실질 명사 후보군을 파싱합니다.
-    const words = ((topic || "") + " " + (hypothesis || "")).match(/[가-힣]{2,10}/g) || [];
-    // 불필요하게 범용적으로 쓰이는 수식어/조사/동사 제거
-    const stopWords = ["활용", "이용", "통한", "분석", "연구", "탐구", "주제", "가설", "비교", "설계", "모델", "수학", "과학", "개념", "기반", "원리", "현상", "효과", "영향", "관계", "상관"];
-    const cleanWords = words.filter(w => !stopWords.some(sw => w.includes(sw)));
-    
-    // 추출된 키워드 중 첫 번째를 핵심 변인 단어로, 두 번째를 결과 변인 단어로 채택
-    const mainKw = cleanWords[0] || "조사 대상";
-    const subKw = cleanWords[1] || cleanWords[0] || "측정 수치";
-
-    slots.forEach(s => {
-      let val = "";
-      if (s.includes("조작") || s.includes("독립")) {
-        if (isDrawingOrArt) {
-          val = "피사체 관찰 각도 (0도 ~ 90도)";
-        } else if (isInfectionOrBio) {
-          val = "거리두기 단계 (1단계 ~ 4단계)";
-        } else if (isFinanceOrSeq) {
-          val = "할인 가격 격차 (100원 ~ 1,000원)";
-        } else if (isPhysicsOrCol) {
-          val = "수레의 초기 발사 속도 (초속 1미터 ~ 5미터)";
-        } else if (isChemistryOrReact) {
-          val = "반응 물질의 투입 농도 (0.1M ~ 1.0M)";
-        } else if (isEarthOrClimate) {
-          val = "온실가스 강제 유입 비율 (5% ~ 25%)";
-        } else if (isSurveyOrStat) {
-          val = "하루 평균 기기 사용 시간 (1시간 ~ 5시간)";
-        } else if (isPureMath) {
-          val = "함수 그래프 독립 변수 입력값 (0 ~ 10)";
-        } else {
-          val = `${mainKw} 조건 변화량 (10 ~ 100)`;
-        }
-      } else if (s.includes("종속")) {
-        if (isDrawingOrArt) {
-          val = "캐릭터 비율의 시각적 만족도 설문 (1점 ~ 5점)";
-        } else if (isInfectionOrBio) {
-          val = "최대 감염까지 걸린 시간 (1일 ~ 30일)";
-        } else if (isFinanceOrSeq) {
-          val = "5개월 뒤 총 예상 수익 (100만 원 ~ 1,000만 원)";
-        } else if (isPhysicsOrCol) {
-          val = "충돌 후 줄어든 운동 에너지 (1줄 ~ 50줄)";
-        } else if (isChemistryOrReact) {
-          val = "앙금 생성 완료 시까지 걸린 시간 (10초 ~ 60초)";
-        } else if (isEarthOrClimate) {
-          val = "지표면 평균 온도 상승 변동량 (0.1도 ~ 1.5도)";
-        } else if (isSurveyOrStat) {
-          val = "참여자의 일상 수면 만족도 설문 점수 (1점 ~ 5점)";
-        } else if (isPureMath) {
-          val = "극한 수렴 오차값 계산값 (0.01 이하)";
-        } else {
-          val = `${subKw}의 정량적 반응 실측치`;
-        }
-      } else if (s.includes("통제") || s.includes("일정") || s.includes("요인") || s.includes("대상")) {
-        if (isDrawingOrArt) {
-          val = "도화지 가로세로 비율 (4:3 또는 16:9), 실내 조명 밝기 (일정하게 유지)";
-        } else if (isInfectionOrBio) {
-          val = "처음 감염된 사람 수 (5명 ~ 20명), 예방 접종률 (70% 고정)";
-        } else if (isFinanceOrSeq) {
-          val = "제품 한 개당 원래 가격 (1만 원 ~ 10만 원), 최소 생활비";
-        } else if (isPhysicsOrCol) {
-          val = "수레의 무게 (500그램), 실험대 마찰 정도 (일정하게 유지)";
-        } else if (isChemistryOrReact) {
-          val = "용액의 전체 부피 (50ml 고정), 외부 온도 및 기압 환경";
-        } else if (isEarthOrClimate) {
-          val = "태양 복사 에너지 강도, 표면 반사율 상수 (0.3 고정)";
-        } else if (isSurveyOrStat) {
-          val = "설문 조사 응답자 연령대 분포 (고교 1학년군 고정)";
-        } else if (isPureMath) {
-          val = "연속 함수 시작 좌표 범위 (0에서 고정)";
-        } else {
-          val = `${mainKw} 실험 환경 통제 조건 (일정하게 유지)`;
-        }
-      } 
-      // 수학적 모델링 슬롯
-      else if (s === "입력 변수") {
-        if (isDrawingOrArt) {
-          val = "인물 관절이 꺾인 각도 (0도 ~ 90도)";
-        } else if (isInfectionOrBio) {
-          val = "최초 감염자 수 (1명 ~ 10명)";
-        } else if (isFinanceOrSeq) {
-          val = "기본 상품 판매 가격 (1,000원 ~ 10,000원)";
-        } else if (isPhysicsOrCol) {
-          val = "충돌 전 수레의 속도 (초속 1미터 ~ 3미터)";
-        } else if (isChemistryOrReact) {
-          val = "반응 유도 산성 물질 농도 (10% ~ 50%)";
-        } else if (isEarthOrClimate) {
-          val = "대기 중 탄소 유입 속도 (연간 상승 배출량)";
-        } else if (isSurveyOrStat) {
-          val = "주간 모바일 수신 알림 횟수 (10회 ~ 100회)";
-        } else if (isPureMath) {
-          val = "기하학적 공간 좌표 축 길이 (0 ~ 5)";
-        } else {
-          val = `${mainKw} 조건 변화 수치 (10 ~ 100)`;
-        }
-      } else if (s === "모델 파라미터") {
-        if (isDrawingOrArt) {
-          val = "황금 비율 상수 (약 1.618)";
-        } else if (isInfectionOrBio) {
-          val = "하루 감염 확률 (0.1 ~ 0.5), 완치 확률 (0.05 ~ 0.2)";
-        } else if (isFinanceOrSeq) {
-          val = "가격 변화에 따른 구매 민감도 계수 (1.0 ~ 2.0)";
-        } else if (isPhysicsOrCol) {
-          val = "바퀴의 굴림 마찰 상수 (0.01 ~ 0.10)";
-        } else if (isChemistryOrReact) {
-          val = "물질 고유 반응 속도 상수 (0.05)";
-        } else if (isEarthOrClimate) {
-          val = "이산화탄소 대기 보존 수명 기간 계수 (1.2)";
-        } else if (isSurveyOrStat) {
-          val = "알림 반응 시간 지체 가중 계수 (1.5)";
-        } else if (isPureMath) {
-          val = "기울기 및 수렴 방향 가중 비율 (0.5)";
-        } else {
-          val = `${mainKw} 시스템 감쇄 및 조절 비례 상수 (0.1 ~ 0.5)`;
-        }
-      } else if (s === "출력 변수") {
-        if (isDrawingOrArt) {
-          val = "화면 왜곡을 조절하는 2차 함수 모델";
-        } else if (isInfectionOrBio) {
-          val = "시간에 따른 하루 누적 환자 수 (0명 ~ 1,000명)";
-        } else if (isFinanceOrSeq) {
-          val = "가장 높은 수익을 내기 위한 2차 곡선 모델";
-        } else if (isPhysicsOrCol) {
-          val = "충돌할 때 잃어버린 에너지량 (10% ~ 50%)";
-        } else if (isChemistryOrReact) {
-          val = "반응 속도 변화에 따른 수득률 곡선 모델";
-        } else if (isEarthOrClimate) {
-          val = "대기 온도 연도별 한계 지수 시뮬레이션 곡선";
-        } else if (isSurveyOrStat) {
-          val = "스트레스 유발율 상관관계 2차 예측 수식";
-        } else if (isPureMath) {
-          val = "곡선 아래 면적 정적분 연산 도출 곡선";
-        } else {
-          val = `${subKw}의 수학적 예측 수치 곡선 (결과 그래프)`;
-        }
-      }
-      // 문헌/조사 분석 슬롯
-      else if (s === "분석 차원") {
-        if (isDrawingOrArt) {
-          val = "삼각함수를 응용한 캐릭터 원근 대칭의 정확도";
-        } else if (isInfectionOrBio) {
-          val = "감염병 재생산지수 공식을 활용한 접촉 예방 효과";
-        } else if (isFinanceOrSeq) {
-          val = "등비수열 수렴법칙을 적용한 정기 구독 요금의 장기적 이득";
-        } else if (isPhysicsOrCol) {
-          val = "충격량 공식을 활용한 수레 충돌의 실험 오차 보정율";
-        } else if (isChemistryOrReact) {
-          val = "중화반응 그래프 공식을 응용한 산염기 혼합액 오차 분석";
-        } else if (isEarthOrClimate) {
-          val = "이산화탄소 피드백 수식을 적용한 해수면 상승 시뮬레이션";
-        } else if (isSurveyOrStat) {
-          val = "피어슨 상관계수 공식을 활용한 수면 부족과의 유의성 분석";
-        } else if (isPureMath) {
-          val = "함수 극한 근사치를 대조한 곡선 접선 기울기 수렴성";
-        } else {
-          val = `${mainKw}과 ${subKw}의 상관관계 비교 기준`;
-        }
-      } else if (s === "비교 대상" || s === "비교대상") {
-        if (isDrawingOrArt) {
-          val = "르네상스 고전 회화의 신체 비례 vs 현대 인기 웹툰 캐릭터의 신체 비례";
-        } else if (isInfectionOrBio) {
-          val = "인구가 밀집된 대도시 주민 vs 인구가 적은 농어촌 주민";
-        } else if (isFinanceOrSeq) {
-          val = "매달 자동으로 요금이 나가는 방식 vs 필요할 때마다 충전하는 방식";
-        } else if (isPhysicsOrCol) {
-          val = "매끄러운 알루미늄 실험대 데이터 vs 거친 나무 실험대 데이터";
-        } else if (isChemistryOrReact) {
-          val = "정규 반응 촉매 투입 용액군 vs 자연 무촉매 화학 반응 용액군";
-        } else if (isEarthOrClimate) {
-          val = "유엔 기후 협약 적극 가입 국가들 vs 소극적 기후 기피 국가들";
-        } else if (isSurveyOrStat) {
-          val = "스마트폰 과의존 학생 표본 vs 하루 1시간 미만 사용 학생 표본";
-        } else if (isPureMath) {
-          val = "1차 테일러 급수 근사 함수 vs 실제 비선형 삼각함수 그래프";
-        } else {
-          val = `${mainKw} 대조군 and 실험군 비교 집단`;
-        }
-      } else if (s === "독립 요인") {
-        if (isDrawingOrArt) {
-          val = "화면을 내려다보거나 올려다보는 각도 (0도 ~ 60도)";
-        } else if (isInfectionOrBio) {
-          val = "마스크 착용 의무 기간과 자율 착용 기간의 비교";
-        } else if (isFinanceOrSeq) {
-          val = "할인 쿠폰이나 캐시백을 주는 금액대 (1만 원 ~ 5만 원)";
-        } else if (isPhysicsOrCol) {
-          val = "고무줄을 뒤로 당긴 거리 (5센티미터 ~ 20센티미터)";
-        } else if (isChemistryOrReact) {
-          val = "반응 온도의 조작 변동 레벨 (10도 / 30도 / 50도)";
-        } else if (isEarthOrClimate) {
-          val = "산림 면적의 보존/황폐화 연도별 시점 구분";
-        } else if (isSurveyOrStat) {
-          val = "스마트폰 전면 금지 규정 적용 학교군 여부";
-        } else if (isPureMath) {
-          val = "함수 미분 연속성 검증 좌표 축 이동 방향";
-        } else {
-          val = `${mainKw}의 서로 다른 대조 요인 조건`;
-        }
-      } else if (s === "측정 항목") {
-        if (isDrawingOrArt) {
-          val = "그림의 시각적 안정감에 대한 만족도 설문 (1점 ~ 5점)";
-        } else if (isInfectionOrBio) {
-          val = "하루 동안 열이 난 학생 수 (0명 ~ 10명)";
-        } else if (isFinanceOrSeq) {
-          val = "특정 기간 동안 새로 방문한 고객 수 (10명 ~ 100명)";
-        } else if (isPhysicsOrCol) {
-          val = "압력 센서에 기록된 가장 큰 압력 (10뉴턴 ~ 100뉴턴)";
-        } else if (isChemistryOrReact) {
-          val = "초당 기체 거품 발생량 (분당 5회 ~ 50회)";
-        } else if (isEarthOrClimate) {
-          val = "대기 정밀 측정 지점 탄소 검출 수치 (ppm)";
-        } else if (isSurveyOrStat) {
-          val = "하루 평균 숙면 소요 시간 (3시간 ~ 8시간)";
-        } else if (isPureMath) {
-          val = "도함수 연산값 및 극대 극소 좌표 실수값";
-        } else {
-          val = `${subKw}에 관한 설문 만족도 리커트 척도 (1점 ~ 5점)`;
-        }
-      } else {
-        val = `${s} (예시 값/범위)`;
-      }
-      result[s] = val;
-    });
-
-    return result;
+    return {
+      strength,
+      weakness,
+      actionPlan,
+      overallEvaluation
+    };
   },
 
   validateThemeCurriculum: function (subject, theme) {
